@@ -39,49 +39,9 @@ mongoose.connect(
 
 //import routes
 const Auth = require("./routes/AuthRoutes");
-const product = require("./routes/product.routes");
-const equipment = require("./routes/EquipmentsRoutes");
-const membership = require("./routes/MembershipsRoutes");
-const userRouter = require("./routes/userRoutes");
-const instructor = require("./routes/InstructorsRoutes");
-const workout = require("./routes/WorkoutsRoutes");
-const diet = require("./routes/DietsRoutes");
-const payment = require("./routes/paymetRoutes");
-const card = require("./routes/cardRoutes");
-const cart = require("./routes/cart");
+
 
 
 //User management routes
-app.use("/gym",Auth);
+app.use("/taprobane",Auth);
 
-//Store management routes
-app.use("/product",product);
-app.use("/uploads", express.static("uploads"));
-
-
-//Equipments Routes
-app.use("/gym/equipment", equipment);
-
-//Instructors Routes
-app.use("/gym/instructor", instructor);
-
-//Membership Routes
-app.use("/gym/membership", membership);
-
-//user routes
-app.use("/gym/user",userRouter);
-
-//Workout Routes
-app.use("/gym/workout", workout);
-
-//Diet Routes
-app.use("/gym/diet", diet);
-
-//Payment Routes
-app.use("/gym/payment", payment);
-
-//Card Routes
-app.use("/gym/card", card)
-
-//cart routes
-app.use("/gym/cart",cart)

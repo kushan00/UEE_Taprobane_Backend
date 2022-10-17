@@ -9,12 +9,7 @@ const MerchantModel = require("../models/merchantModel.js");
 const WholeSaleBuyerModel = require("../models/wholeSaleBuyerModel.js");
 const DeliveryPerson = require("../models/deliveryPersonModel.js");
 
-
-var apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwZjk5OTFiMC1kNGUzLTExZWMtYmViYi0wOTUyMTdlNmY3ZDUiLCJzdWIiOiJTSE9VVE9VVF9BUElfVVNFUiIsImlhdCI6MTY1MjY4MzIyMiwiZXhwIjoxOTY4MzAyNDIyLCJzY29wZXMiOnsiYWN0aXZpdGllcyI6WyJyZWFkIiwid3JpdGUiXSwibWVzc2FnZXMiOlsicmVhZCIsIndyaXRlIl0sImNvbnRhY3RzIjpbInJlYWQiLCJ3cml0ZSJdfSwic29fdXNlcl9pZCI6IjY4MDE1Iiwic29fdXNlcl9yb2xlIjoidXNlciIsInNvX3Byb2ZpbGUiOiJhbGwiLCJzb191c2VyX25hbWUiOiIiLCJzb19hcGlrZXkiOiJub25lIn0.U_m2CPK2xVilqVHN6PMxwkaRaTUXjAD0v13HDcDPv5k';
-
-var debug = true, verifySSL = false;
-
-
+const {sendSms} = require("../helpers/smsSender");
 
 var jwtSecret = "mysecrettoken";
 
@@ -26,69 +21,188 @@ const registerUser = async (req, res) => {
         password,  
         mobileno, 
         dateOfBirth,
-        weight,
-        height,    
+        address,
+        Selling_Items,
+        country,
+        vehicle_type,
+        vehicle_number,   
+        userRole         
     } = req.body;
 
     // generating user unique gym id
     var Tp_id = await uniqueID.generateID();
 
     
-    var client = new ShoutoutClient(apiKey, debug, verifySSL);
-    var message = {
-    "content": {"sms": "Hello! "+fullName+" Your Registration is successfull..!" + "Your Taprobane ID is: "+Tp_id+"."},
-    "destinations": [mobileno],
-    "source": "ShoutDEMO",
-    "transports": ["SMS"]
-    };
-
-    client.sendMessage(message, (error, result) => {
-    if (error) {
-    console.error('Error sending message!',error);
-    } else {
-    console.log('Sending message successful!',result);
-    }
-    });
+ 
 
     
   try {
-    // See if user exists
-    let user = await User.findOne({ email });
 
-    if (user) {
-      apiResponse.AlreadyExists(res,"User already exists",{user : user?.fullName});
-      return 0; 
-    }
+      if(userRole == "merchant"){
 
-    user = new User({
-        Tp_id,
-        fullName, 
-        email, 
-        password,  
-        mobileno, 
-        dateOfBirth,
-        weight,
-        height, 
-    });
+        let oldUser = await MerchantModel.findOne({ email });
 
-    //Encrypt Password
-    const salt = await bcrypt.genSalt(10);
+        if (oldUser) {
+          apiResponse.AlreadyExists(res,"Merchant already exists",{user : oldUser?.fullName});
+          return 0; 
+        }
 
-    user.password = await bcrypt.hash(password, salt);
+        const user = new MerchantModel({
+            Tp_id,  
+            fullName,
+            email,
+            password,
+            mobileno,
+            dateOfBirth,
+            address,
+            Selling_Items,            
+        });
 
-    await user.save();
+        const salt = await bcrypt.genSalt(10);
 
-    //Return jsonwebtoken
-    const payload = {
-      user: {
-        id: user.id,
-      },
-    };
+        user.password = await bcrypt.hash(password, salt);
+    
+        await user.save();
+    
+        //Return jsonwebtoken
+        const payload = {
+          user: {
+            id: user.id,
+          },
+        };
+    
+        jwt.sign(payload, jwtSecret, { expiresIn: 360000 }, (err, token) => {
+          if (err) throw err;
+          apiResponse.Success(res,"Register Success",{ token, userRole: user?.userRole, userName: user?.fullName , userID : user.Tp_id , _id:user?._id  })
+          sendSms(fullName,Tp_id,mobileno);
+        });
 
-    jwt.sign(payload, jwtSecret, { expiresIn: 360000 }, (err, token) => {
-      if (err) throw err;
-      apiResponse.Success(res,"Register Success",{ token, userRole: user.userRole, user: user.fullName , userID : user.gym_id , _id:user?._id  })
-    });
+
+
+      }
+      else if(userRole == "wholesale_buyer"){
+
+        let oldUser = await WholeSaleBuyerModel.findOne({ email });
+
+        if (oldUser) {
+          apiResponse.AlreadyExists(res,"wholesale_buyer already exists",{user : oldUser?.fullName});
+          return 0; 
+        }
+
+        const user = new WholeSaleBuyerModel({
+            Tp_id,
+            fullName,
+            email,
+            password,
+            mobileno,
+            dateOfBirth,
+            address,
+        });
+        
+        const salt = await bcrypt.genSalt(10);
+
+        user.password = await bcrypt.hash(password, salt);
+    
+        await user.save();
+    
+        //Return jsonwebtoken
+        const payload = {
+          user: {
+            id: user.id,
+          },
+        };
+    
+        jwt.sign(payload, jwtSecret, { expiresIn: 360000 }, (err, token) => {
+          if (err) throw err;
+          apiResponse.Success(res,"Register Success",{ token, userRole: user?.userRole, userName: user?.fullName , userID : user.Tp_id , _id:user?._id  })
+          sendSms(fullName,Tp_id,mobileno);
+        });
+
+      }
+      else if(userRole == "delivery_person"){
+
+        let oldUser = await DeliveryPerson.findOne({ email });
+
+        if (oldUser) {
+          apiResponse.AlreadyExists(res,"delivery_person already exists",{user : oldUser?.fullName});
+          return 0; 
+        }
+
+        const user = new DeliveryPerson({
+            Tp_id,
+            fullName,
+            email,
+            password,
+            mobileno,
+            dateOfBirth,
+            address,
+            vehicle_type,
+            vehicle_number,
+        });
+
+        const salt = await bcrypt.genSalt(10);
+
+        user.password = await bcrypt.hash(password, salt);
+    
+        await user.save();
+    
+        //Return jsonwebtoken
+        const payload = {
+          user: {
+            id: user.id,
+          },
+        };
+    
+        jwt.sign(payload, jwtSecret, { expiresIn: 360000 }, (err, token) => {
+          if (err) throw err;
+          apiResponse.Success(res,"Register Success",{ token, userRole: user?.userRole, userName: user?.fullName , userID : user.Tp_id , _id:user?._id  })
+          sendSms(fullName,Tp_id,mobileno);
+        });
+
+      }
+      else if(userRole == "foreign_user"){
+
+        let oldUser = await ForiegnUser.findOne({ email });
+
+        if (oldUser) {
+          apiResponse.AlreadyExists(res,"foreign_user already exists",{user : oldUser?.fullName});
+          return 0; 
+        }
+
+        const user = new ForiegnUser({
+            fullName,
+            email,
+            password,
+            mobileno,
+            dateOfBirth,
+            address,
+            country,
+            Tp_id,
+        });
+        
+        const salt = await bcrypt.genSalt(10);
+
+        user.password = await bcrypt.hash(password, salt);
+    
+        await user.save();
+    
+        //Return jsonwebtoken
+        const payload = {
+          user: {
+            id: user.id,
+          },
+        };
+    
+        jwt.sign(payload, jwtSecret, { expiresIn: 360000 }, (err, token) => {
+          if (err) throw err;
+          apiResponse.Success(res,"Register Success",{ token, userRole: user?.userRole, userName: user?.fullName , userID : user.Tp_id , _id:user?._id  })
+          sendSms(fullName,Tp_id,mobileno);
+        });
+      }
+      else{
+        return  apiResponse.ServerError(res,"Registration Failed",{err:email});
+      }
+
   } catch (err) {
     console.error(err.message);
     apiResponse.ServerError(res,"Server Error",{err:err});
@@ -97,17 +211,21 @@ const registerUser = async (req, res) => {
 
 const authUser = async (req, res) => {
   try {
-    let user = await User.findById(req.user.id);
+    let user = await DeliveryPerson.findById(req.user.id);
     if (!user) 
     {
-        user = await Admin.findById(req.user.id);
+        user = await WholeSaleBuyerModel.findById(req.user.id);
         if(!user)
         {
-            user = await Instructor.findById(req.user.id);
+            user = await MerchantModel.findById(req.user.id);
             if(!user)
             {
-                apiResponse.NotFound(res,"Token expired or null",{ err: "Error" })
-                return 0;  
+                user = await ForiegnUser.findById(req.user.id);
+                if(!user)
+                {
+                  apiResponse.NotFound(res,"Token expired or null",{ err: "Error" })
+                  return 0;  
+                }
             }
         }
     }
@@ -124,21 +242,25 @@ const loginUser = async (req, res) => {
 
   try {
     // See if user exists
-    let user = await User.findOne({ email });
-
+    let user = await DeliveryPerson.findOne({ email });
     if (!user) 
     {
-        user = await Admin.findOne({ email });
+        user = await WholeSaleBuyerModel.findOne({ email });
         if(!user)
         {
-            user = await Instructor.findOne({ email });
+            user = await MerchantModel.findOne({ email });
             if(!user)
             {
-                apiResponse.NotFound(res,"Invalid Credentials",{ err: "Error" })
-                return 0; 
+                user = await ForiegnUser.findOne({ email });
+                if(!user)
+                {
+                  apiResponse.NotFound(res,"Invalid Credentials",{ err: "Error" })
+                  return 0; 
+                }
             }
         }
     }
+
   
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -156,7 +278,7 @@ const loginUser = async (req, res) => {
 
     jwt.sign(payload, jwtSecret, { expiresIn: "1 days" }, (err, token) => {
       if (err) throw err;
-      apiResponse.Success(res,"Login Success",{ token, userRole: user.userRole , user: user.fullName , userID : user?.gym_id ? user?.gym_id : "" , _id:user?._id  })
+      apiResponse.Success(res,"Login Success",{ token, userRole: user?.userRole , user: user?.fullName , userID : user?.Tp_id ? user?.Tp_id : "" , _id:user?._id  })
     });
   } catch (err) {
     console.log(err.message);
@@ -165,27 +287,27 @@ const loginUser = async (req, res) => {
 };
 
 
-const updateAdmin = async (req, res) => {
-  const { id } = req.params;
-  const { fullName, mobileno, email } = req.body;
+//const updateAdmin = async (req, res) => {
+  // const { id } = req.params;
+  // const { fullName, mobileno, email } = req.body;
 
-  const filter = { _id: id };
-  const update = { 
-       fullName: fullName,
-       mobileno:mobileno,
-       email : email,    
-      };
+  // const filter = { _id: id };
+  // const update = { 
+  //      fullName: fullName,
+  //      mobileno:mobileno,
+  //      email : email,    
+  //     };
 
-  try {
+  // try {
   
-  let data = await Admin.findOneAndUpdate(filter, update);
-  console.log(data);
-  apiResponse.Success(res,"Admin Details Updated", {data:data});
+  // let data = await Admin.findOneAndUpdate(filter, update);
+  // console.log(data);
+  // apiResponse.Success(res,"Admin Details Updated", {data:data});
 
-  } catch (error) {
-    apiResponse.ServerError(res,"Server Error",{err:error});
-  }
-}
+  // } catch (error) {
+  //   apiResponse.ServerError(res,"Server Error",{err:error});
+  // }
+//}
 
 
 
@@ -193,5 +315,5 @@ module.exports = {
   registerUser,
   authUser,
   loginUser,
-  updateAdmin
+  //updateAdmin
 };
