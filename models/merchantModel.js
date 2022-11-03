@@ -30,10 +30,6 @@ const MerchantSchema = new mongoose.Schema({
 		type: String,
         default:null
 	},
-    Selling_Items: {
-		type: [],
-		required: true,
-	},
     password: {
 		type: String,
 		required: true,
