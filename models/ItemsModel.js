@@ -26,6 +26,11 @@ const ItemSchema = new mongoose.Schema({
 		type: String,
 		default: null
 	},
+	owner : {
+        type: mongoose.Schema.Types.ObjectId,
+		required: true,
+        ref: "merchant"
+	}
 
 },
 	{
