@@ -7,7 +7,13 @@ const wholesaleOrderModel = require("../models/wholesaleOrderModel");
 //-----get Wholesale orders--------//
 const getWholesaleOrders = async (req, res) => {
   try {
-    const wholesaleOrders = await wholesaleOrderModel.find();
+    const wholesaleOrders = await wholesaleOrderModel.find()
+    .populate({
+      path: "wholesalebuyer_Id",
+  })
+  .populate({
+    path: "delivery_rider_id",
+});
     apiResponse.Success(res, "wholesaleOrders", { wholesaleOrders: wholesaleOrders });
   } catch (err) {
     console.error(err.message);
@@ -20,7 +26,13 @@ const getWholesaleOrders = async (req, res) => {
 const getWholesaleOrder = async (req, res) => {
   const { id } = req.params;
   try {
-    const wholesaleOrder = await wholesaleOrderModel.find({ _id: id });
+    const wholesaleOrder = await wholesaleOrderModel.find({ _id: id })
+    .populate({
+      path: "wholesalebuyer_Id",
+  })
+  .populate({
+    path: "delivery_rider_id",
+});
     apiResponse.Success(res, "WholesaleOrder", { wholesaleOrder: wholesaleOrder });
   } catch (err) {
     console.error(err.message);
@@ -38,7 +50,7 @@ const createWholesaleOrder = async (req, res) => {
 
     //generate WholesaleOrder id
     const wholesaleOrder_Id = await uniqueID.generateWholesaleOrderID();
-    newWholesaleOrder.WholesaleOrder_id = wholesaleOrder_Id;
+    newWholesaleOrder.WholesaleOrder_Id = wholesaleOrder_Id;
 
     console.log("Saved Wholesale Order data", newWholesaleOrder);
     try {
@@ -81,6 +93,8 @@ const updateWholesaleOrder = async (req, res) => {
     }
 }
 
+
+//-----delete Wholesale order--------//
 
 const deleteWholesaleOrder = async (req, res) => {
     const { id } = req.params;
