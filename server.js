@@ -39,9 +39,12 @@ mongoose.connect(
 
 //import routes
 const Auth = require("./routes/AuthRoutes");
+const Item = require("./routes/ItemRoutes");
+const ItemPackages = require("./routes/ItemPackageRoutes");
 
 
 
 //User management routes
 app.use("/taprobane",Auth);
-
+app.use("/item",Item);
+app.use("/item-packages",ItemPackages);
