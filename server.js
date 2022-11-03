@@ -41,6 +41,8 @@ mongoose.connect(
 const Auth = require("./routes/AuthRoutes");
 const Item = require("./routes/ItemRoutes");
 const ItemPackages = require("./routes/ItemPackageRoutes");
+const normalOrder = require("./routes/normalOrderRoutes");
+const wholesaleOrder = require("./routes/wholesaleOrderRoutes");
 
 
 
@@ -48,3 +50,5 @@ const ItemPackages = require("./routes/ItemPackageRoutes");
 app.use("/taprobane",Auth);
 app.use("/item",Item);
 app.use("/item-packages",ItemPackages);
+app.use("/normal-order",normalOrder);
+app.use("/wholesale-order",wholesaleOrder);
