@@ -7,7 +7,13 @@ const normalOrderModel = require("../models/normalOrderModel");
 //-----get normal orders--------//
 const getNormalOrders = async (req, res) => {
   try {
-    const normalOrders = await normalOrderModel.find();
+    const normalOrders = await normalOrderModel.find()
+    .populate({
+      path: "foriegn_user_Id",
+  })
+  .populate({
+    path: "delivery_rider_id",
+});
     apiResponse.Success(res, "normalOrders", { normalOrders: normalOrders });
   } catch (err) {
     console.error(err.message);
@@ -20,7 +26,14 @@ const getNormalOrders = async (req, res) => {
 const getNormalOrder = async (req, res) => {
   const { id } = req.params;
   try {
-    const normalOrder = await normalOrderModel.find({ _id: id });
+    const normalOrder = await normalOrderModel.find({ _id: id })
+    .populate({
+      path: "foriegn_user_Id"
+    })
+    .populate({
+      path: "delivery_rider_id",
+  });
+
     apiResponse.Success(res, "normalOrder", { normalOrder: normalOrder });
   } catch (err) {
     console.error(err.message);
@@ -38,7 +51,7 @@ const createNormalOrder = async (req, res) => {
 
     //generate normalOrder id
     const normalOrder_Id = await uniqueID.generateNormalOrderID();
-    newNormalOrder.normalOrder_id = normalOrder_Id;
+    newNormalOrder.normalOrder_Id = normalOrder_Id;
 
     console.log("Saved Normal Order data", newNormalOrder);
     try {
@@ -81,6 +94,8 @@ const updateNormalOrder = async (req, res) => {
     }
 }
 
+
+//-----delete normal order--------//
 
 const deleteNormalOrder = async (req, res) => {
     const { id } = req.params;
