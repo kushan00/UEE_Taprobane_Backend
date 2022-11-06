@@ -4,6 +4,8 @@ const apiResponse = require("../helpers/apiResponse");
 
 const cardModel = require("../models/cardModel");
 
+
+
  const getCards = async (req, res) => { 
     try {
         const cards = await cardModel.find();
@@ -20,7 +22,7 @@ const cardModel = require("../models/cardModel");
     const { id } = req.params;
 
     try {
-        const card = await cardModel.findById(id);
+        const card = await cardModel.findOne({card_Owner:mongoose.Types.ObjectId(id)});
         
         apiResponse.Success(res,"card",{ card: card })
     } catch (err) {
@@ -45,5 +47,30 @@ const cardModel = require("../models/cardModel");
     }
 }
 
+const updateCard = async (req, res) => {
+    const { id } = req.params;
+    const { ctype, holder, cardNum, year, month, cvv , card_Owner } = req.body;
 
-module.exports = {getCard, getCards,createCard};
+    const filter = { _id: id };
+    const update = {
+        ctype: ctype,
+        holder: holder,
+        cardNum: cardNum,
+        year: year,
+        month: month,
+        card_Owner: card_Owner,
+    };
+
+    try {
+
+        let data = await cardModel.findOneAndUpdate(filter, update);
+        console.log(data);
+        apiResponse.Success(res, "Card Details Updated", { data: data });
+
+    } catch (error) {
+        apiResponse.ServerError(res, "Server Error", { err: error });
+    }
+}
+
+
+module.exports = {getCard, getCards,createCard,updateCard};

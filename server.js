@@ -43,7 +43,8 @@ const Item = require("./routes/ItemRoutes");
 const ItemPackages = require("./routes/ItemPackageRoutes");
 const normalOrder = require("./routes/normalOrderRoutes");
 const wholesaleOrder = require("./routes/wholesaleOrderRoutes");
-
+const DeliveryAddress = require("./routes/DeliveryAddressRoutes");
+const Card = require("./routes/cardRoutes");
 
 
 //User management routes
@@ -52,3 +53,5 @@ app.use("/item",Item);
 app.use("/item-packages",ItemPackages);
 app.use("/normal-order",normalOrder);
 app.use("/wholesale-order",wholesaleOrder);
+app.use("/delivery-address",DeliveryAddress);
+app.use("/card",Card);
