@@ -49,7 +49,7 @@ const updateDeliveryAddress = async (req, res) => {
     const { id } = req.params;
     const { address_owner, addressLine1, addressLine2, mobileno} = req.body;
 
-    const filter = { _id: id };
+    const filter = { address_owner: id };
     const update = {
         address_owner: address_owner,
         addressLine1: addressLine1,

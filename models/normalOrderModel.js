@@ -36,12 +36,12 @@ const normalOrderSchema = new mongoose.Schema({
 
     confirm_status: {
         type: Boolean,
-        default: 0
+        default: false
     },
 
     delivery_rider_id: {
         type: mongoose.Schema.Types.ObjectId,
-		required: true,
+		required: false,
         ref: "deliveryPerson"
 
     },

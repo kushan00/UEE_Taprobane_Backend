@@ -50,14 +50,15 @@ const cardModel = require("../models/cardModel");
 const updateCard = async (req, res) => {
     const { id } = req.params;
     const { ctype, holder, cardNum, year, month, cvv , card_Owner } = req.body;
-
-    const filter = { _id: id };
+    console.log(id,ctype,holder,cardNum,year,month,cvv,card_Owner);
+    const filter = { card_Owner: id };
     const update = {
         ctype: ctype,
         holder: holder,
         cardNum: cardNum,
         year: year,
         month: month,
+        cvv:cvv,
         card_Owner: card_Owner,
     };
 
