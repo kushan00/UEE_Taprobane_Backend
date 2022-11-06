@@ -6,7 +6,10 @@ const ItemModel = require("../models/ItemsModel");
 
 const getItems = async (req, res) => {
   try {
-    const Items = await ItemModel.find();
+    const Items = await ItemModel.find()
+    .populate({
+        path: 'owner',
+    });
     apiResponse.Success(res, "Items", { Items: Items });
   } catch (err) {
     console.error(err.message);
@@ -17,7 +20,10 @@ const getItems = async (req, res) => {
 const getItem = async (req, res) => {
   const { id } = req.params;
   try {
-    const Item = await ItemModel.find({ _id: id });
+    const Item = await ItemModel.find({ _id: id })
+    .populate({
+      path: 'owner',
+    });
     apiResponse.Success(res, "Item", { Item: Item });
   } catch (err) {
     console.error(err.message);

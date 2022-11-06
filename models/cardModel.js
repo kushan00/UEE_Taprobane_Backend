@@ -26,6 +26,10 @@ const CardSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
+    card_Owner:{
+        type:String,
+        required:true,
+    }
 },
 {
 	timestamps: true,
