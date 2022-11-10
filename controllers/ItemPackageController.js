@@ -21,7 +21,7 @@ const getItemPackages = async (req, res) => {
 const getItemPackage = async (req, res) => {
   const { id } = req.params;
   try {
-    const ItemPackage = await ItemPackageModel.find({ _id: id })
+    const ItemPackage = await ItemPackageModel.find({ Item_id: id })
     .populate({
         path: "Item_id",
     });
@@ -39,8 +39,8 @@ const createItemPackage = async (req, res) => {
     const ItemPackage = new ItemPackageModel({ ...Item });
 
     //generate Item id
-    const Item_Id = await uniqueID.generateItemPackageID();
-    ItemPackage.Item_Id = Item_Id;
+    const package_id = await uniqueID.generateItemPackageID();
+    ItemPackage.package_id = package_id;
 
     console.log("Saved Item data", ItemPackage);
     try {
