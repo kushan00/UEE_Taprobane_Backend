@@ -68,5 +68,13 @@ const updateDeliveryAddress = async (req, res) => {
     }
 }
 
+const deleteDeliveryDetails = async (req, res) => {
+    const { id } = req.params;
+    console.log(id);
+    await DeliveryAddressModel.findOneAndRemove({address_owner:mongoose.Types.ObjectId(id)});
 
-module.exports = {getDeliveryAddress, getDeliveryAddresss,createDeliveryAddress,updateDeliveryAddress};
+    apiResponse.Success(res, "Delivery Details Deleted", {});
+}
+
+
+module.exports = {getDeliveryAddress, getDeliveryAddresss,createDeliveryAddress,updateDeliveryAddress,deleteDeliveryDetails};

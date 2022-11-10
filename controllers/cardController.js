@@ -73,5 +73,13 @@ const updateCard = async (req, res) => {
     }
 }
 
+const deleteCardDetails = async (req, res) => {
+    const { id } = req.params;
 
-module.exports = {getCard, getCards,createCard,updateCard};
+    await cardModel.findOneAndRemove({card_Owner:mongoose.Types.ObjectId(id)});
+
+    apiResponse.Success(res, "Delivery Details Deleted", {});
+}
+
+
+module.exports = {getCard, getCards,createCard,updateCard,deleteCardDetails};
