@@ -236,6 +236,33 @@ const authUser = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  try {
+    let user = await DeliveryPerson.findById(req.params.id);
+    if (!user) 
+    {
+        user = await WholeSaleBuyerModel.findById(req.params.id);
+        if(!user)
+        {
+            user = await MerchantModel.findById(req.params.id);
+            if(!user)
+            {
+                user = await ForiegnUser.findById(req.params.id);
+                if(!user)
+                {
+                  apiResponse.NotFound(res,"Token expired or null",{ err: "Error" })
+                  return 0;  
+                }
+            }
+        }
+    }
+    apiResponse.Success(res,"Auth Success",{ user: user })
+  } catch (err) {
+    console.error(err.message);
+    apiResponse.ServerError(res,"Server Error",{err:err});
+  }
+};
+
 const loginUser = async (req, res) => {
 
   const { email, password } = req.body;
@@ -288,18 +315,18 @@ const loginUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    let user = await DeliveryPerson.findById(req.user.id
+    let user = await DeliveryPerson.findById(req.params.id
     );
     if (!user)
     {
-        user = await WholeSaleBuyerModel.findById(req.user.id);
+        user = await WholeSaleBuyerModel.findById(req.params.id);
         if(!user)
         {
-            user = await MerchantModel.findById(req.user.id
+            user = await MerchantModel.findById(req.params.id
             );
             if(!user)
             {
-                user = await ForiegnUser.findById(req.user.id);
+                user = await ForiegnUser.findById(req.params.id);
                 if(!user)
                 {
                   apiResponse.NotFound(res,"Token expired or null",{ err: "Error" })
@@ -323,7 +350,7 @@ const updateUser = async (req, res) => {
     if (vehicle_number) profileFields.vehicle_number = vehicle_number;
 
     user = await DeliveryPerson.findByIdAndUpdate(
-      req.user.id,
+      req.params.id,
       { $set: profileFields },
       { new: true }
     );
@@ -331,21 +358,21 @@ const updateUser = async (req, res) => {
     if (!user)
     {
         user = await WholeSaleBuyerModel.findByIdAndUpdate(
-            req.user.id,
+            req.params.id,
             { $set: profileFields },
             { new: true }
           );
           if(!user)
           {
               user = await MerchantModel.findByIdAndUpdate(
-                req.user.id,
+                req.params.id,
                 { $set: profileFields },
                 { new: true }
               );
               if(!user)
               {
                   user = await ForiegnUser.findByIdAndUpdate(
-                    req.user.id,
+                    req.params.id,
                     { $set: profileFields },
                     { new: true }
                   );
@@ -442,5 +469,6 @@ module.exports = {
   loginUser,
   updateUser,
   deleteUser,
+  getUser,
   //updateAdmin
 };
