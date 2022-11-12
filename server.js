@@ -45,7 +45,7 @@ const normalOrder = require("./routes/normalOrderRoutes");
 const wholesaleOrder = require("./routes/wholesaleOrderRoutes");
 const DeliveryAddress = require("./routes/DeliveryAddressRoutes");
 const Card = require("./routes/cardRoutes");
-
+const ProductImage = require("./routes/productImageRoute");
 
 //User management routes
 app.use("/taprobane",Auth);
@@ -55,3 +55,4 @@ app.use("/normal-order",normalOrder);
 app.use("/wholesale-order",wholesaleOrder);
 app.use("/delivery-address",DeliveryAddress);
 app.use("/card",Card);
+app.use("/product-image",ProductImage);

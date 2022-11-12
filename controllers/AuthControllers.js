@@ -236,6 +236,33 @@ const authUser = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  try {
+    let user = await DeliveryPerson.findById(req.params.id);
+    if (!user) 
+    {
+        user = await WholeSaleBuyerModel.findById(req.params.id);
+        if(!user)
+        {
+            user = await MerchantModel.findById(req.params.id);
+            if(!user)
+            {
+                user = await ForiegnUser.findById(req.params.id);
+                if(!user)
+                {
+                  apiResponse.NotFound(res,"Token expired or null",{ err: "Error" })
+                  return 0;  
+                }
+            }
+        }
+    }
+    apiResponse.Success(res,"Auth Success",{ user: user })
+  } catch (err) {
+    console.error(err.message);
+    apiResponse.ServerError(res,"Server Error",{err:err});
+  }
+};
+
 const loginUser = async (req, res) => {
 
   const { email, password } = req.body;
@@ -286,6 +313,131 @@ const loginUser = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  try {
+    let user = await DeliveryPerson.findById(req.params.id
+    );
+    if (!user)
+    {
+        user = await WholeSaleBuyerModel.findById(req.params.id);
+        if(!user)
+        {
+            user = await MerchantModel.findById(req.params.id
+            );
+            if(!user)
+            {
+                user = await ForiegnUser.findById(req.params.id);
+                if(!user)
+                {
+                  apiResponse.NotFound(res,"Token expired or null",{ err: "Error" })
+                  return 0;
+                }
+            }
+        }
+    }
+    
+    const { fullName, email, mobileno, dateOfBirth, address, country, vehicle_type, vehicle_number } = req.body;
+
+    // Build profile object
+    const profileFields = {};
+    if (fullName) profileFields.fullName = fullName;
+    if (email) profileFields.email = email;
+    if (mobileno) profileFields.mobileno = mobileno;
+    if (dateOfBirth) profileFields.dateOfBirth = dateOfBirth;
+    if (address) profileFields.address = address;
+    if (country) profileFields.country = country;
+    if (vehicle_type) profileFields.vehicle_type = vehicle_type;
+    if (vehicle_number) profileFields.vehicle_number = vehicle_number;
+
+    user = await DeliveryPerson.findByIdAndUpdate(
+      req.params.id,
+      { $set: profileFields },
+      { new: true }
+    );
+
+    if (!user)
+    {
+        user = await WholeSaleBuyerModel.findByIdAndUpdate(
+            req.params.id,
+            { $set: profileFields },
+            { new: true }
+          );
+          if(!user)
+          {
+              user = await MerchantModel.findByIdAndUpdate(
+                req.params.id,
+                { $set: profileFields },
+                { new: true }
+              );
+              if(!user)
+              {
+                  user = await ForiegnUser.findByIdAndUpdate(
+                    req.params.id,
+                    { $set: profileFields },
+                    { new: true }
+                  );
+                  if(!user)
+                  {
+                    apiResponse.NotFound(res,"Token expired or null",{ err: "Error" })
+                    return 0;
+                  }
+              }
+          }
+    }
+    apiResponse.Success(res,"Update Success",{ user: user })
+  } catch (err) {
+    console.error(err.message);
+    apiResponse.ServerError(res,"Server Error",{err:err});
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    let user = await DeliveryPerson.findById(req.user.id
+    );
+    if (!user)
+    {
+        user = await WholeSaleBuyerModel.findById(req.user.id);
+        if(!user)
+        {
+            user = await MerchantModel.findById(req.user.id
+            );
+            if(!user)
+            {
+                user = await ForiegnUser.findById(req.user.id);
+                if(!user)
+                {
+                  apiResponse.NotFound(res,"Token expired or null",{ err: "Error" })
+                  return 0;
+                }
+            }
+        }
+    }
+    await DeliveryPerson.findByIdAndRemove(req.user.id);
+    if (!user)
+    {
+        user = await WholeSaleBuyerModel.findByIdAndRemove(req.user.id);
+        if(!user)
+        {
+            user = await MerchantModel.findByIdAndRemove(req.user.id
+            );
+            if(!user)
+            {
+                user = await ForiegnUser.findByIdAndRemove(req.user.id);
+                if(!user)
+                {
+                  apiResponse.NotFound(res,"Token expired or null",{ err: "Error" })
+                  return 0;
+                }
+            }
+        }
+    }
+    apiResponse.Success(res,"Delete Success",{ user: user })
+  } catch (err) {
+    console.error(err.message);
+    apiResponse.ServerError(res,"Server Error",{err:err});
+  }
+};
 
 //const updateAdmin = async (req, res) => {
   // const { id } = req.params;
@@ -315,5 +467,8 @@ module.exports = {
   registerUser,
   authUser,
   loginUser,
+  updateUser,
+  deleteUser,
+  getUser,
   //updateAdmin
 };
