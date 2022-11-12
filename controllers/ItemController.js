@@ -4,6 +4,7 @@ const apiResponse = require("../helpers/apiResponse");
 const uniqueID = require("../helpers/uniqueID");
 const ItemModel = require("../models/ItemsModel");
 
+//get items by ID
 const getItems = async (req, res) => {
   try {
     const Items = await ItemModel.find()
@@ -17,6 +18,7 @@ const getItems = async (req, res) => {
   }
 };
 
+//get all items 
 const getItem = async (req, res) => {
   const { id } = req.params;
   try {
@@ -52,7 +54,7 @@ const createItem = async (req, res) => {
     }
 }
 
-
+//update item
 const updateItem = async (req, res) => {
     const { id } = req.params;
     const { item_Id, name, description, is_wholesale, unit_price, image_url } = req.body;
@@ -78,7 +80,7 @@ const updateItem = async (req, res) => {
     }
 }
 
-
+//delete item
 const deleteItem = async (req, res) => {
     const { id } = req.params;
 
